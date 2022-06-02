@@ -3,7 +3,7 @@ import cv2 as cv
 from character import Character
 from ball import Ball
 from cleat import Cleat
-import math
+from pygame import mixer
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
@@ -19,7 +19,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Load Background
 background = pygame.image.load('images/background.jpeg')
-# background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 # functions
@@ -35,7 +35,7 @@ def is_collision(ball_x, ball_y, character_x, character_y):
 
     # half of the balls size
     ball_x += 55
-    if ball_x > character_x and ball_x < character_x + 200 and ball_y > 600:
+    if ball_x > character_x + 20 and ball_x < character_x + 200 and ball_y > 600:
         print("good header")
         return True
     else:
@@ -68,6 +68,12 @@ def end_game(ball1, ball2, ball3):
     ball3.x_pos = -200
 
 
+def siu_celebration():
+    siu_sound = mixer.Sound('SUIII.mp3')
+    siu_sound.set_volume(.5)
+    siu_sound.play(maxtime=2000)
+
+
 # Create character
 character = Character()
 
@@ -97,7 +103,7 @@ running = True
 while running:
 
     # Set background
-    screen.blit(background, (-200, 0))
+    screen.blit(background, (0, 0))
     show_score(10, 10)
 
     if game_over:
@@ -115,6 +121,7 @@ while running:
     # TODO: had to hard code each ball
     if ball1.is_active and not game_over:
         if is_collision(ball1.x_pos, ball1.y_pos, character_x, 600):
+            siu_celebration()
             ball1 = Ball()
             score_value += 1
         screen.blit(ball1.get_img(), (ball1.x_pos, ball1.y_pos))
@@ -124,6 +131,7 @@ while running:
 
     if ball2.is_active and not game_over:
         if is_collision(ball2.x_pos, ball2.y_pos, character_x, 600):
+            siu_celebration()
             ball2 = Ball()
             score_value += 1
         screen.blit(ball2.get_img(), (ball2.x_pos, ball2.y_pos))
@@ -133,6 +141,7 @@ while running:
 
     if ball3.is_active and not game_over:
         if is_collision(ball3.x_pos, ball3.y_pos, character_x, 600):
+            siu_celebration()
             ball3 = Ball()
             score_value += 1
         screen.blit(ball3.get_img(), (ball3.x_pos, ball3.y_pos))
