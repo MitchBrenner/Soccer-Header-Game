@@ -2,6 +2,7 @@ import pygame
 import cv2 as cv
 from character import Character
 from ball import Ball
+from cleat import Cleat
 import math
 
 SCREEN_WIDTH = 1200
@@ -52,6 +53,21 @@ def show_score(x, y):
     screen.blit(score, (x, y))
 
 
+font2 = pygame.font.Font('SoccerScoreboard-XmMg.ttf', 128)
+
+
+def show_end_game_text(x, y):
+    # first you have to render text then you can blit it on the screen
+    score = font2.render("GAME OVER", True, (175, 0, 0))
+    screen.blit(score, (x, y))
+
+
+def end_game(ball1, ball2, ball3):
+    ball1.x_pos = -200
+    ball2.x_pos = -200
+    ball3.x_pos = -200
+
+
 # Create character
 character = Character()
 
@@ -64,6 +80,11 @@ ball1 = Ball()
 ball2 = Ball()
 ball3 = Ball()
 
+
+# cleat
+cleat1 = Cleat()
+cleat2 = Cleat()
+
 # create webcam
 webcam = cv.VideoCapture(0)
 
@@ -71,13 +92,16 @@ webcam = cv.VideoCapture(0)
 # this is here in case face is not detected right away
 character_x = 0
 
-
+game_over = False
 running = True
 while running:
 
     # Set background
     screen.blit(background, (-200, 0))
     show_score(10, 10)
+
+    if game_over:
+        show_end_game_text(200, 300)
 
     # TODO: can't figure out how to use a for loop for balls, balls will not respawn
     # for ball in balls:
@@ -89,7 +113,7 @@ while running:
     #         ball = Ball()
 
     # TODO: had to hard code each ball
-    if ball1.is_active:
+    if ball1.is_active and not game_over:
         if is_collision(ball1.x_pos, ball1.y_pos, character_x, 600):
             ball1 = Ball()
             score_value += 1
@@ -98,7 +122,7 @@ while running:
     else:
         ball1 = Ball()
 
-    if ball2.is_active:
+    if ball2.is_active and not game_over:
         if is_collision(ball2.x_pos, ball2.y_pos, character_x, 600):
             ball2 = Ball()
             score_value += 1
@@ -107,7 +131,7 @@ while running:
     else:
         ball2 = Ball()
 
-    if ball3.is_active:
+    if ball3.is_active and not game_over:
         if is_collision(ball3.x_pos, ball3.y_pos, character_x, 600):
             ball3 = Ball()
             score_value += 1
@@ -115,6 +139,26 @@ while running:
         ball3.drop_ball()
     else:
         ball3 = Ball()
+
+    if cleat1.is_active and not game_over:
+        if is_collision(cleat1.x_pos, cleat1.y_pos, character_x, 600):
+            cleat1 = Cleat()
+            end_game(ball1, ball2, ball3)
+            game_over = True
+        screen.blit(cleat1.get_img(), (cleat1.x_pos, cleat1.y_pos))
+        cleat1.drop_cleat()
+    else:
+        cleat1 = Cleat()
+
+    if cleat2.is_active and not game_over:
+        if is_collision(cleat2.x_pos, cleat2.y_pos, character_x, 600):
+            cleat2 = Cleat()
+            end_game(ball1, ball2, ball3)
+            game_over = True
+        screen.blit(cleat2.get_img(), (cleat2.x_pos, cleat2.y_pos))
+        cleat2.drop_cleat()
+    else:
+        cleat2 = Cleat()
 
     # finding character coordinates
     successful_frame_read, frame = webcam.read()
